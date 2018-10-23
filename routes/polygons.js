@@ -1,14 +1,14 @@
 const express = require('express')
 const router = express.Router()
 
-const { all, create, update, destroy } = require('../controllers/polygons')
+const polygons = require('../controllers/polygons')
 
 router.route('/')
-    .get(all)
-    .post(create)
+    .get(polygons.all)
+    .post(polygons.create)
 
 router.route('/:id')
-    .put(update)
-    .delete(destroy)
+    .put(polygons.update)
+    .delete(polygons.destroy)
 
 module.exports = router

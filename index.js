@@ -15,5 +15,5 @@ app.use('/polygons', require('./routes/polygons'))
 app.use('/addresses', require('./routes/addresses'))
 
 app.listen(config.port, () => {
-    console.log(`server running on http://localhost:/${config.port}`)
+    console.log('server running...')
 })
