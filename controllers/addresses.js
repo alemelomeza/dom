@@ -1,15 +1,15 @@
-const config = require('../config')
-const client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
-const nominatim = require('nominatim-interface')
-const _ = require('lodash')
+var config = require('../config')
+var client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
+var nominatim = require('nominatim-interface')
+var _ = require('lodash')
 
 module.exports = {
     get: (req, res) => {
-        let query = req.params.address + '&limit=1'
+        var query = req.params.address + '&limit=1'
 
         nominatim(encodeURI(query))
             .then(data => {
-                let address = _.first(data)
+                var address = _.first(data)
 
                 if (_.isEmpty(data)) {
                     res.status(404).json({
@@ -23,7 +23,7 @@ module.exports = {
                             })
                         }
 
-                        const collection = client.db(config.db.name).collection('polygons')
+                        var collection = client.db(config.db.name).collection('polygons')
 
                         collection.find({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 500 } } }).toArray((error, docs)  => {
                             if (error) {
@@ -46,7 +46,7 @@ module.exports = {
                                     }
                                 })
                             } else {
-                                let featureCollection = {
+                                var featureCollection = {
                                     type: 'FeatureCollection',
                                     features: []
                                 }
@@ -62,7 +62,7 @@ module.exports = {
                                     }
                                 })
 
-                                for (const key in docs) {
+                                for (var key in docs) {
                                     featureCollection.features.push({
                                         type: 'Feature',
                                         geometry: docs[key].geometry,
