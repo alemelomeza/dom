@@ -1,5 +1,5 @@
-const config = require('../config')
-const client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
+var config = require('../config')
+var client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
 
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
                 })
             }
 
-            const collection = client.db(config.db.name).collection('polygons')
+            var collection = client.db(config.db.name).collection('polygons')
 
             collection.find({}).limit(2).toArray((error, docs) => {
                 if (error) {

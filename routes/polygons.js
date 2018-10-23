@@ -1,7 +1,7 @@
-const express = require('express')
-const router = express.Router()
+var express = require('express')
+var router = express.Router()
 
-const polygons = require('../controllers/polygons')
+var polygons = require('../controllers/polygons')
 
 router.route('/')
     .get(polygons.all)

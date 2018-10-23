@@ -1,11 +1,11 @@
-const morgan = require('morgan')
+var morgan = require('morgan')
 
-const express = require('express')
-const bodyParser = require('body-parser')
+var express = require('express')
+var bodyParser = require('body-parser')
 
-const config = require('./config')
+var config = require('./config')
 
-const app = express()
+var app = express()
 
 app.use(morgan('dev'))
 app.use(bodyParser.json())
