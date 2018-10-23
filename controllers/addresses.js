@@ -5,7 +5,7 @@ var _ = require('lodash')
 
 module.exports = {
     get: (req, res) => {
-        var query = req.params.address + '&limit=1'
+        var query = req.params.address + '&email=alxmlo@gmail.com&limit=1'
 
         nominatim(encodeURI(query))
             .then(data => {
