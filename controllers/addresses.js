@@ -5,31 +5,53 @@ const _ = require('lodash')
 
 module.exports = {
     get: (req, res) => {
-        let query = req.params.address + '&countrycodes=cl&accept-language=es-CL&limit=1'
+        let query = req.params.address + '&limit=1'
 
         nominatim(encodeURI(query))
             .then(data => {
                 let address = _.first(data)
 
-                client.connect(error => {
-                    if (error) {
-                        res.status(500).json({
-                            response: error
-                        })
-                    }
-
-                    const collection = client.db(db.name).collection('polygons')
-
-                    collection.find({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } }).toArray((error, doc)  => {
+                if (_.isEmpty(data)) {
+                    res.status(404).json({
+                        response: 'Not found'
+                    })
+                } else {
+                    client.connect(error => {
                         if (error) {
-                            res.status(404).json({
+                            res.status(500).json({
                                 response: error
                             })
                         }
 
-                        if (_.isEmpty) {
-                            res.status(200).json({
-                                response: {
+                        const collection = client.db(db.name).collection('polygons')
+
+                        collection.find({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 500 } } }).toArray((error, docs)  => {
+                            if (error) {
+                                res.status(404).json({
+                                    response: error
+                                })
+                            }
+
+                            if (_.isEmpty(docs)) {
+                                res.status(200).json({
+                                    response: {
+                                        type: 'Feature',
+                                        geometry: {
+                                            type: 'Point',
+                                            coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ]
+                                        },
+                                        properties: {
+                                            display_name: address.display_name
+                                        }
+                                    }
+                                })
+                            } else {
+                                let featureCollection = {
+                                    type: 'FeatureCollection',
+                                    features: []
+                                }
+
+                                featureCollection.features.push({
                                     type: 'Feature',
                                     geometry: {
                                         type: 'Point',
@@ -38,42 +60,25 @@ module.exports = {
                                     properties: {
                                         display_name: address.display_name
                                     }
-                                }
-                            })
-                        } else {
-                            const polygon = _.first(doc)
+                                })
 
-                            res.status(200).json({
-                                response: {
-                                    type: 'FeatureCollection',
-                                    features: [
-                                        {
-                                            type: 'Feature',
-                                            geometry: {
-                                                type: 'Point',
-                                                coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ]
-                                            },
-                                            properties: {
-                                                display_name: address.display_name
-                                            }
-                                        },
-                                        {
-                                            type: 'Feature',
-                                            geometry: {
-                                                type: 'Polygon',
-                                                coordinates: polygon.geometry.coordinates
-                                            },
-                                            properties: {}
-                                        }
-                                    ]
+                                for (const key in docs) {
+                                    featureCollection.features.push({
+                                        type: 'Feature',
+                                        geometry: docs[key].geometry,
+                                        properties: {}
+                                    })
                                 }
-                            })
-                        }
 
+                                res.status(200).json({
+                                    response: featureCollection
+                                })
+                            }
+                        })
+
+                        client.close()
                     })
-
-                    client.close()
-                })
+                }
             })
             .catch(error => {
                 res.status(404).json({
