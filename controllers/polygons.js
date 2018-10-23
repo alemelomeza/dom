@@ -13,7 +13,7 @@ module.exports = {
 
             const collection = client.db(db.name).collection('polygons')
 
-            collection.find({}).toArray((error, docs) => {
+            collection.find({}).limit(2).toArray((error, docs) => {
                 if (error) {
                     res.status(404).json({
                         response: 'Document not found'
