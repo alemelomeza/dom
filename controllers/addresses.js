@@ -1,5 +1,5 @@
-const { db } = require('../config')
-const client = require('mongodb').MongoClient(db.uri, { useNewUrlParser: true })
+const config = require('../config')
+const client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
 const nominatim = require('nominatim-interface')
 const _ = require('lodash')
 
@@ -23,7 +23,7 @@ module.exports = {
                             })
                         }
 
-                        const collection = client.db(db.name).collection('polygons')
+                        const collection = client.db(config.db.name).collection('polygons')
 
                         collection.find({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 500 } } }).toArray((error, docs)  => {
                             if (error) {
