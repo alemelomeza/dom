@@ -1,7 +1,7 @@
-const express = require('express')
-const router = express.Router()
+var express = require('express')
+var router = express.Router()
 
-const addresses = require('../controllers/addresses')
+var addresses = require('../controllers/addresses')
 
 router.route('/:address')
     .get(addresses.get)
