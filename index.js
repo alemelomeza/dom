@@ -33,7 +33,8 @@ client.connect(error => {
                 } else {
                     const address = _.first(data)
 
-                    collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } })
+                    // collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } })
+                    collection.findOne({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 5 } } })
                         .then(doc => {
                             if (_.isEmpty(doc)) {
                                 res.status(200).json({
