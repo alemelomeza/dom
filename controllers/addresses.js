@@ -5,7 +5,7 @@ var _ = require('lodash')
 
 module.exports = {
     get: (req, res) => {
-        var query = req.params.address + '&email=alxmlo@gmail.com&limit=1'
+        var query = req.params.address + '&countrycodes=cl&accept-language=es-CL&limit=1'
 
         nominatim(encodeURI(query))
             .then(data => {
@@ -19,16 +19,16 @@ module.exports = {
                     client.connect(error => {
                         if (error) {
                             res.status(500).json({
-                                response: error
+                                response: '>>> connect ' + error
                             })
                         }
 
                         var collection = client.db(config.db.name).collection('polygons')
 
-                        collection.find({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 500 } } }).toArray((error, docs)  => {
+                        collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } }).toArray((error, docs)  => {
                             if (error) {
                                 res.status(404).json({
-                                    response: error
+                                    response: '>>> find' + error
                                 })
                             }
 
@@ -75,16 +75,13 @@ module.exports = {
                                 })
                             }
                         })
-
-                        client.close()
                     })
                 }
             })
             .catch(error => {
                 res.status(404).json({
-                    response: error
+                    response: '>>> geocodification ' + error
                 })
             })
-
     }
 }
