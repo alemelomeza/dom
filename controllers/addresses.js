@@ -25,14 +25,14 @@ module.exports = {
 
                         var collection = client.db(config.db.name).collection('polygons')
 
-                        collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } }).toArray((error, docs)  => {
+                        collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } }, (error, doc)  => {
                             if (error) {
                                 res.status(404).json({
                                     response: '>>> find' + error
                                 })
                             }
 
-                            if (_.isEmpty(docs)) {
+                            if (_.isEmpty(doc)) {
                                 res.status(200).json({
                                     response: {
                                         type: 'Feature',
@@ -62,13 +62,11 @@ module.exports = {
                                     }
                                 })
 
-                                for (var key in docs) {
-                                    featureCollection.features.push({
-                                        type: 'Feature',
-                                        geometry: docs[key].geometry,
-                                        properties: {}
-                                    })
-                                }
+                                featureCollection.features.push({
+                                    type: 'Feature',
+                                    geometry: doc.geometry,
+                                    properties: {}
+                                })
 
                                 res.status(200).json({
                                     response: featureCollection
