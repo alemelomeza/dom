@@ -87,6 +87,74 @@ client.connect(error => {
                 })
             })
     })
+
+    app.get('/polygons', (req, res) => {
+        if (error) {
+            res.status(500).json({
+                response: 'error connection to db'
+            })
+        }
+
+        collection.find({}).toArray((err, docs) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error in db'
+                })
+            }
+
+            res.status(200).json({
+                response: {
+                    type: 'FeatureCollection',
+                    features: docs
+                }
+            })
+        })
+    })
+
+    app.get('/polygons/zone/:zone', (req, res) => {
+        if (error) {
+            res.status(500).json({
+                response: 'error in db'
+            })
+        }
+
+        collection.find({ 'properties.ZONA_PRC': req.params.zone }).toArray((err, docs) => {
+            if (err) {
+                res.status(500).json({
+                    response: 'error in db'
+                })
+            }
+
+            res.status(200).json({
+                response: {
+                    type: 'FeatureCollection',
+                    features: docs
+                }
+            })
+        })
+    })
+
+    app.get('/polygons/loc/:location', (req, res) => {
+        if (error) {
+            res.status(500).json({
+                response: 'error in db'
+            })
+        }
+
+        const location = req.params.location.split(',')
+
+        collection.findOne({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(location[0]), parseFloat(location[1]) ] }, $maxDistance: 5 } } })
+            .then(doc => {
+                res.status(200).json({
+                    response: doc
+                })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    response: 'error in db'
+                })
+            })
+    })
 })
 
 app.listen(config.port, () => {
