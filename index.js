@@ -69,7 +69,7 @@ client.connect(error => {
                                             {
                                                 type: 'Feature',
                                                 geometry: doc.geometry,
-                                                properties: {}
+                                                properties: doc.properties
                                             }
                                         ]
                                     }
