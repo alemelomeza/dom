@@ -2,6 +2,7 @@ const morgan = require('morgan')
 const config = require('./config')
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
 const nominatimInterface = require('nominatim-interface')
 const _ = require('lodash')
@@ -11,11 +12,7 @@ const app = express()
 app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-})
+app.use(cors())
 
 client.connect(error => {
     const collection = client.db(config.db.name).collection('polygons')
