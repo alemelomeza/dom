@@ -25,6 +25,8 @@ client.connect(error => {
 
         const query =  encodeURI(`${req.params.address}&countrycodes=cl&accept-language=es-CL&limit=1`)
 
+        nominatimInterface.nominatimAPI = 'https://nominatim.openstreetmap.org'
+
         nominatimInterface(query)
             .then(data => {
                 if(_.isEmpty(data)) {
@@ -34,7 +36,6 @@ client.connect(error => {
                 } else {
                     const address = _.first(data)
 
-                    // collection.findOne({ geometry: { $geoIntersects: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] } } } })
                     collection.findOne({ geometry: { $nearSphere: { $geometry: { type: "Point", coordinates: [ parseFloat(address.lon), parseFloat(address.lat) ] }, $maxDistance: 5 } } })
                         .then(doc => {
                             if (_.isEmpty(doc)) {
