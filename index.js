@@ -1,12 +1,12 @@
-const morgan = require('morgan')
+const fs = require('fs')
 const config = require('./config')
 const express = require('express')
+const https = require('https')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const client = require('mongodb').MongoClient(config.db.uri, { useNewUrlParser: true })
 const nominatimInterface = require('nominatim-interface')
 const _ = require('lodash')
-
 const app = express()
 
 app.use(morgan('dev'))
@@ -113,6 +113,9 @@ client.connect(error => {
     })
 })
 
-app.listen(config.port, () => {
+https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/mibarrioprc.cl/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/mibarrioprc.cl/fullchain.pem')
+}, app).listen(config.port, () => {
     console.log('server running...')
 })
