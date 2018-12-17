@@ -9,7 +9,6 @@ const nominatimInterface = require('nominatim-interface')
 const _ = require('lodash')
 const app = express()
 
-app.use(morgan('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
