@@ -90,52 +90,6 @@ client.connect(error => {
             })
     })
 
-    app.get('/polygons', (req, res) => {
-        if (error) {
-            res.status(500).json({
-                response: 'error connection to db'
-            })
-        }
-
-        collection.find({}).toArray((err, docs) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error in db'
-                })
-            }
-
-            res.status(200).json({
-                response: {
-                    type: 'FeatureCollection',
-                    features: docs
-                }
-            })
-        })
-    })
-
-    app.get('/polygons/zone/:zone', (req, res) => {
-        if (error) {
-            res.status(500).json({
-                response: 'error in db'
-            })
-        }
-
-        collection.find({ 'properties.ZONA_PRC': req.params.zone }).toArray((err, docs) => {
-            if (err) {
-                res.status(500).json({
-                    response: 'error in db'
-                })
-            }
-
-            res.status(200).json({
-                response: {
-                    type: 'FeatureCollection',
-                    features: docs
-                }
-            })
-        })
-    })
-
     app.get('/polygons/loc/:location', (req, res) => {
         if (error) {
             res.status(500).json({
